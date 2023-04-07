@@ -1,5 +1,7 @@
 # Authentication Development with Different Security Levels
 
+## Note: The project is in the development stage.
+
 This project aims to develop authentication methods with different security levels, ranging from 1 to 6.
 
 - Libraries: 
