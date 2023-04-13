@@ -50,12 +50,42 @@ app.get('/register', function(req, res) {
 });
 
 app.get("/secrets", function(req, res){
+    User.find({"secret": {$ne:null}})
+    .then(foundUser => {
+        if (foundUser) {
+            res.render("secrets", {usersWithSecrets: foundUser})
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    });
+});
+
+app.get("/submit", (req, res) => {
     if (req.isAuthenticated()) {
-        res.render("secrets")
+        res.render("submit");
     } else{
-        res.redirect("/login");
+        res.redirect("login");
     }
-})
+});
+
+app.post("/submit", function (req, res) {
+    console.log(req.user);
+    User.findById(req.user)
+      .then(foundUser => {
+        if (foundUser) {
+          foundUser.secret = req.body.secret;
+          return foundUser.save();
+        }
+        return null;
+      })
+      .then(() => {
+        res.redirect("/secrets");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+});
 
 app.get("/logout", (req, res) => {
     //logout method comes from "passport" package
@@ -104,7 +134,8 @@ app.post('/login', async(req, res) => {
 const userSchema = new mongoose.Schema ({
     email: String,
     password: String,
-    googleId: String
+    googleId: String,
+    secret: String
 });  
 
 userSchema.plugin(passportLocalMongoose);
